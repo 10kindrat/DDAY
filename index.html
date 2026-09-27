@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D-Day Calculator</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #0f1115;
+            color: #f5f5f5;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .title h1 {
+            margin: 0;
+            font-size: 42px;
+            font-weight: 800;
+        }
+
+        .title p {
+            margin-top: 10px;
+            color: #8b909a;
+            font-size: 15px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .card {
+            background: #181b21;
+            border: 1px solid #292d35;
+            border-radius: 18px;
+            padding: 25px;
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            border-color: #414754;
+        }
+
+        .name {
+            color: #8b909a;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .date {
+            font-size: 14px;
+            color: #b7bbc3;
+            margin-bottom: 18px;
+        }
+
+        .dday {
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .remaining {
+            margin-top: 8px;
+            color: #777d88;
+            font-size: 13px;
+        }
+
+        .passed {
+            color: #ff6b6b;
+        }
+
+        .today {
+            color: #6ee7a0;
+        }
+
+        .footer {
+            text-align: center;
+            color: #555b65;
+            font-size: 12px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 20px;
+                align-items: flex-start;
+                padding-top: 50px;
+            }
+
+            .title h1 {
+                font-size: 34px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .dday {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="title">
+        <h1>D-Day</h1>
+        <p id="today"></p>
+    </div>
+
+    <div class="cards">
+
+        <div class="card">
+            <div class="name">🎓 졸업</div>
+            <div class="date">2027년 1월 28일</div>
+            <div class="dday" id="graduation">-</div>
+            <div class="remaining" id="graduation-detail"></div>
+        </div>
+
+        <div class="card">
+            <div class="name">📚 수능</div>
+            <div class="date">2026년 11월 19일</div>
+            <div class="dday" id="csat">-</div>
+            <div class="remaining" id="csat-detail"></div>
+        </div>
+
+        <div class="card">
+            <div class="name">🎉 성인</div>
+            <div class="date">2027년 1월 1일</div>
+            <div class="dday" id="adult">-</div>
+            <div class="remaining" id="adult-detail"></div>
+        </div>
+
+        <div class="card">
+            <div class="name">🏖️ 2학기 방학</div>
+            <div class="date">2026년 12월 29일</div>
+            <div class="dday" id="vacation">-</div>
+            <div class="remaining" id="vacation-detail"></div>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        D-Day Calculator
+    </div>
+
+</div>
+
+<script>
+
+    const events = [
+        {
+            id: "graduation",
+            date: "2027-01-28"
+        },
+        {
+            id: "csat",
+            date: "2026-11-19"
+        },
+        {
+            id: "adult",
+            date: "2027-01-01"
+        },
+        {
+            id: "vacation",
+            date: "2026-12-29"
+        }
+    ];
+
+    function getToday() {
+        const now = new Date();
+
+        return new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate()
+        );
+    }
+
+    function calculateDday(targetDate) {
+
+        const today = getToday();
+
+        const target = new Date(
+            targetDate.getFullYear(),
+            targetDate.getMonth(),
+            targetDate.getDate()
+        );
+
+        const difference =
+            target.getTime() - today.getTime();
+
+        return Math.ceil(
+            difference / (1000 * 60 * 60 * 24)
+        );
+    }
+
+    function updateDdays() {
+
+        const today = getToday();
+
+        document.getElementById("today").textContent =
+            `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;
+
+        events.forEach(event => {
+
+            const targetDate = new Date(event.date + "T00:00:00");
+
+            const dday = calculateDday(targetDate);
+
+            const ddayElement =
+                document.getElementById(event.id);
+
+            const detailElement =
+                document.getElementById(event.id + "-detail");
+
+            if (dday > 0) {
+
+                ddayElement.textContent = `D-${dday}`;
+                ddayElement.className = "dday";
+
+                detailElement.textContent =
+                    `${dday}일 남음`;
+
+            } else if (dday === 0) {
+
+                ddayElement.textContent = "D-DAY";
+                ddayElement.className = "dday today";
+
+                detailElement.textContent =
+                    "오늘입니다!";
+
+            } else {
+
+                ddayElement.textContent =
+                    `D+${Math.abs(dday)}`;
+
+                ddayElement.className =
+                    "dday passed";
+
+                detailElement.textContent =
+                    `${Math.abs(dday)}일 지남`;
+            }
+
+        });
+    }
+
+    updateDdays();
+
+</script>
+
+</body>
+</html>
